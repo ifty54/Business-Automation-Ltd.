@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Pie Chart using amCharts 5</title>
+  <!-- Include amCharts libraries -->
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/percent.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+
+    #chartdiv {
+      width: 100%;
+      height: 700px; /* Increased height for a larger chart */
+    }
+
+    .value-box {
+      background-color: #fff;
+      border: 1px solid #ccc;
+      padding: 5px;
+      font-size: 14px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Chart container -->
+<div id="chartdiv"></div>
+
+<script>
+// Create root and chart
+var root = am5.Root.new("chartdiv");
+
+root.setThemes([
+  am5themes_Animated.new(root)
+]);
+
+var chart = root.container.children.push(
+  am5percent.PieChart.new(root, {
+    layout: root.verticalLayout,
+    radius: am5.percent(80) // Further increase the pie chart size
+  })
+);
+
+// Create series
+var series = chart.series.push(
+  am5percent.PieSeries.new(root, {
+    valueField: "value",
+    categoryField: "category",
+    alignLabels: false,
+    radius: am5.percent(70), // Make the pie radius bigger
+    innerRadius: am5.percent(0) // Remove the white hole in the center
+  })
+);
+
+// Set data
+series.data.setAll([
+  { "category": "NOC", "value": 727, "color": series.get("colors").getIndex(0) },
+  { "category": "IOC", "value": 1227, "color": series.get("colors").getIndex(1) },
+  { "category": "LNG", "value": 605, "color": series.get("colors").getIndex(2) }
+]);
+
+// Configure pie slices to separate slightly
+series.slices.template.setAll({
+  strokeWidth: 2,
+  stroke: am5.color(0xffffff), // White stroke between slices
+  tooltipText: "{category}: {value}", // Tooltip for each slice
+  pullOutDuration: 500, // Duration for pulling out slices
+  pullOutEffect: "easeOutSine", // Pull-out effect
+  pullOutRadius: 10 // Space between slices
+});
+
+// Add a legend and position it below the chart
+var legend = root.container.children.push(
+  am5.Legend.new(root, {
+    x: am5.p50,
+    centerX: am5.p50,
+    y: am5.p100,
+    centerY: am5.p100,
+    layout: root.horizontalLayout,
+    marginTop: 20,
+    markerWidth: 20, // Width of the color marker
+    itemContainers: {
+      paddingTop: 5,
+      paddingBottom: 5
+    }
+  })
+);
+
+// Add the legend to the series
+legend.data.setAll(series.dataItems);
+
+// Add title with padding
+chart.children.unshift(am5.Label.new(root, {
+  text: "Daily Gas Production (15th August, 2024)",
+  fontSize: 20,
+  fontWeight: "bold",
+  x: am5.p50,
+  centerX: am5.p50,
+}));
+
+// Custom labels for values outside the pie chart
+series.slices.template.events.on("ready", function(event) {
+  var dataItem = event.target.dataItem;
+  var slice = event.target;
+
+  if (dataItem) {
+    var value = dataItem.get("value");
+
+    // Create a value box for each slice
+    var valueBox = am5.Label.new(root, {
+      text: value,
+      background: am5.RoundedRectangle.new(root, {
+        fill: am5.color(0xffffff),
+        stroke: am5.color(0xcccccc),
+        strokeWidth: 1,
+        cornerRadius: 5
+      }),
+      paddingLeft: 10,
+      paddingRight: 10,
+      paddingTop: 5,
+      paddingBottom: 5,
+      fontSize: 14,
+      fill: am5.color(0x000000),
+      textAlign: "center",
+      centerX: am5.p50,
+      centerY: am5.p50
+    });
+
+    // Position the value box based on the slice's position
+    var angle = slice.get("startAngle") + (slice.get("endAngle") - slice.get("startAngle")) / 2;
+    var offset = 20;
+    var xOffset = Math.cos(angle * Math.PI / 180) * (series.radius.get() + offset);
+    var yOffset = Math.sin(angle * Math.PI / 180) * (series.radius.get() + offset);
+
+    chart.children.push(valueBox);
+    valueBox.set("x", slice.pixelX + xOffset);
+    valueBox.set("y", slice.pixelY + yOffset);
+  }
+});
+
+// Animate slices
+series.appear(1000, 100);
+chart.appear(1000, 100);
+
+</script>
+
+</body>
+</html>

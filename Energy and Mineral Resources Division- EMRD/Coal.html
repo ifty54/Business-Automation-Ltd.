@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ECharts Line Chart</title>
+    <!-- Include ECharts script -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+        #main {
+            width: 100%;
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Container for the chart -->
+<div id="main"></div>
+
+<script>
+// Initialize the chart
+var myChart = echarts.init(document.getElementById('main'));
+
+// Specify the configuration
+var option = {
+  title: {
+    text: 'BCMCL Coal Production(15th August,2024)', // Add chart title
+    left: 'center'
+  },
+  xAxis: {
+    type: 'category',
+    boundaryGap: false,
+    data: ['8/1/2024', '8/2/2024', '8/3/2024', '8/4/2024', '8/5/2024', '8/6/2024', '8/7/2024'],
+    axisLabel: {
+      fontWeight: 'normal' // Keep x-axis values non-bold
+    },
+    name: 'Date', // Set x-axis label
+    nameLocation: 'middle', // Position the label at the middle of the x-axis
+    nameGap: 30, // Add some gap between the axis and the label
+    nameTextStyle: {
+      fontWeight: 'bold' // Make x-axis label bold
+    }
+  },
+  yAxis: {
+    type: 'value',
+    name: 'MT', // Set y-axis label
+    nameLocation: 'middle', // Position the label at the middle of the y-axis
+    nameRotate: 90, // Rotate the label parallel to the y-axis
+    nameGap: 50, // Add some gap between the axis and the label
+    nameTextStyle: {
+      fontWeight: 'bold' // Make y-axis label bold
+    }
+  },
+  series: [
+    {
+      data: [3456, 3456, 3214, 3679, 4321, 4567, 3214],
+      type: 'line',
+      areaStyle: {},
+      label: {
+        show: true, // Show value at each point
+        position: 'top' // Position the label above the point
+      }
+    }
+  ]
+};
+
+// Use the specified configuration and data to display the chart
+myChart.setOption(option);
+</script>
+
+</body>
+</html>
